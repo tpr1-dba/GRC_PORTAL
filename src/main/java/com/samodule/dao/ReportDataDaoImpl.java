@@ -40,7 +40,7 @@ public class ReportDataDaoImpl extends JpaDao<SapAmUserRequest> implements Repor
 					+ "from SAP_AM_USER_REQUESTS ur join SAP_AM_USER_REQUEST_APPROVALS ra on ur.request_id=ra.request_id "
 					+ "join SAP_AM_USER_REQUEST_TCODES rt on ur.request_id=rt.request_id ");
 
-			 //queryBuilder.append("where ur.status ='S' ");
+			 queryBuilder.append("where ur.status ='S' ");
 
 			if (!StringUtils.isEmpty(reqDto.getFromDate()) && !StringUtils.isEmpty(reqDto.getToDate())) {
 				queryBuilder.append("where TO_DATE(ur.created_on, 'DD-MM-YY') between TO_DATE(:fromDate, 'DD-MM-YY') AND TO_DATE(:toDate, 'DD-MM-YY') ");
