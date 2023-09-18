@@ -1,0 +1,102 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 Aykut Akin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package com.samodule.controller;
+
+import java.security.Principal;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+
+public class LoginController {
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+	
+	@RequestMapping(value = "/403", method = RequestMethod.GET)
+	public ModelAndView accesssDenied(Principal user) {
+
+		ModelAndView model = new ModelAndView();
+
+		if (user != null) {
+			model.addObject("msg", "Hi " + user.getName() 
+			+ ", you do not have permission to access this page!");
+		} else {
+			model.addObject("msg", 
+			"You do not have permission to access this page!");
+		}
+
+		model.setViewName("403");
+		return model;
+
+	}
+	
+	
+	@RequestMapping(value = "/logoutPage", method = RequestMethod.GET)
+	public String logoutPage(Map<String, Object> model,
+			HttpServletRequest request,HttpServletResponse response) {
+		System.out.println("logoutPage");
+		request.getSession().invalidate();
+//		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+//		response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+//		response.setHeader("Expires", "0"); // Proxies.
+//       request.getSession().invalidate();
+		//return new ModelAndView("logoutPage", model);
+		
+		//return "redirect:https://intranet.dsgroup.com/intranet/home.aspx";
+		return "logoutPage";
+	}
+	
+	@RequestMapping(value = "/loginPage", method = RequestMethod.GET)
+	public ModelAndView loginPage(
+			@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout) {
+
+			ModelAndView model = new ModelAndView();
+			if (error != null) {
+				model.addObject("error", "Invalid username and password!");
+			}
+
+			if (logout != null) {
+				model.addObject("msg", "You've been logged out successfully.");
+			}
+			model.setViewName("loginPage");
+		return model;
+	}
+
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String home() {
+		return "redirect:loginPage";
+	}
+}
